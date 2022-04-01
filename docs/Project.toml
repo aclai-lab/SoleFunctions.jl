@@ -1,0 +1,3 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+SoleFunctions = "5561e46e-99f6-4d08-aa13-3565f6e795b3"
