@@ -3,6 +3,7 @@ module SoleFunctions
 using Statistics
 using Catch22
 
+
 const desc_dict = Dict{Symbol,Function}(
     :mean => mean,
     :min => minimum,
@@ -17,5 +18,6 @@ const desc_dict = Dict{Symbol,Function}(
 const auto_desc_by_dim = Dict{Integer,Vector{Symbol}}(
     1 => [:mean, :min, :max, :quantile_1, :median, :quantile_3]
 )
+
 
 end
