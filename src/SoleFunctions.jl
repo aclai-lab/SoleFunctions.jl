@@ -31,7 +31,7 @@ Return a dictionary containing the associations :symbol -> value (e.g :mean -> 3
 
 ## PARAMETERS
 * `descfun` is a `Vector` of Symbols which are mapped to specific functions.
-* `values` are a `Vector` of Numbers on which the description functions are applied.
+* `values` is a `Vector` of Numbers on which the description functions are applied.
 
 ## EXAMPLE
 ```julia-repl 
