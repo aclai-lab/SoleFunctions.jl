@@ -26,7 +26,7 @@ const auto_desc_by_dim = Dict{Integer,Vector{Symbol}}(
 """ 
     get_desc(descfun, values)
 
-Apply functions represented by `descfun` to `values`.\n
+Evaluate `descfun` with `values`.\n
 Return a dictionary containing the associations :symbol -> value (e.g :mean -> 3.5)
 
 ## PARAMETERS
