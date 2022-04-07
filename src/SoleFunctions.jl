@@ -23,8 +23,8 @@ const desc_dict = Dict{Symbol,Function}(
 const dim_desc = Dict{Integer,Vector{Symbol}}(
     # TODO add default functions for other dimensions
     0 => [:mean, :min, :max],
-    1 => [:mean,:min, :max, :quantile_1, :median, :quantile_3],
-    2 => [:mean, :min, :max, :quantile_1, :median, :quantile_3]
+    1 => [:mean, :min, :max, :quantile_1, :median, :quantile_3],
+    2 => [:mean, :min, :max, :median]
 )
 
 """ 
@@ -84,12 +84,16 @@ function apply_descriptors(descriptors::Vector{Symbol}, values::Array{<:Number})
 end
 
 function apply_descriptors(descriptor::Symbol, values::Array{<:Number})
-    return apply_descriptors( [descriptor] , values)
+    return apply_descriptors([descriptor], values)
+end
+
+function apply_descriptors(values::Number)
+    return apply_descriptors(dim_desc[0], [values])
 end
 
 function apply_descriptors(values::Array{<:Number})
     dims = ndims(values)
-    return apply_descriptors( dim_desc[dims] , values)
+    return apply_descriptors(dim_desc[dims], values)
 end
 
 end # module
