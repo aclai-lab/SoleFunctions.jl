@@ -8,7 +8,7 @@ using Catch22
 export apply_descriptors
 
 # function dictionary
-const desc_dict = Dict{Symbol,Function}(
+const 𝒮 = Dict{Symbol,Function}(
     :mean => mean,
     :min => minimum,
     :max => maximum,
@@ -20,7 +20,7 @@ const desc_dict = Dict{Symbol,Function}(
 )
 
 # default functions by dimension
-const dim_desc = Dict{Integer,Vector{Symbol}}(
+const 𝒟 = Dict{Integer,Vector{Symbol}}(
     # TODO add default functions for other dimensions
     0 => [:mean, :min, :max],
     1 => [:mean, :min, :max, :quantile_1, :median, :quantile_3],
@@ -28,75 +28,58 @@ const dim_desc = Dict{Integer,Vector{Symbol}}(
 )
 
 """ 
-    apply_descriptors(descriptors, values)
+    apply_descriptors(values, descriptors, functions)
 
-Evaluate `descriptors` with `values`.\n
-Return a dictionary containing the associations descriptor -> value
+Evaluate `descriptors` and `functions` with `values`.\n
+Return a dictionary containing the associations descriptor/function -> value
 
 ## PARAMETERS
-* `descriptors` is a `Vector` containing both Symbols and Functions.
-* `values` is a `Vector` of Numbers on which the description functions are applied.
+* `values` is a `Vector{<:Number}`.
+* `descriptors` is a `Vector{Symbol}`.
+* `functions` is a `Vector{Function}`.
 
 ## EXAMPLE
 ```julia-repl 
-julia> desc_syms = [:mean, :min, maximum]
-julia> values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-julia> values_description = descriptors(desc_syms, values)
-Dict{Symbol, Real}(:max => 10, :mean => 5.5, :min => 1)\n
+julia> descriptions = apply_descriptors([1,2,3,4], [:min, :mean], [maximum])
+Dict{Union{Function, Symbol}, Number}(:mean => 2.5, maximum => 4, :min => 1)\n\n
+```
+
+    apply_descriptors(values, descriptors)
+
+## EXAMPLE
+```julia-repl 
+julia> descriptions = apply_descriptors([1,2,3,4], [:min, :mean])
+Dict{Union{Function, Symbol}, Number}(:mean => 2.5, :min => 1)\n\n
 ```
 
     apply_descriptors(values)
-Depending on `values` dimension, apply default functions.
+Evaluate default descriptors with values, based on values dimension
 
-# TODO - show to the user which functions are applied
-
-## PARAMETERS
-* `values` is a `Vector` of Numbers on which the description functions are applied.
-\n
+# TODO - Show 𝒟 content
 """
-function apply_descriptors(descriptors::Vector{Any},  values::Array{<:Number})
-    # descriptors must contain only Function and Symbol types
-    try
-        convert(Vector{Union{Function, Symbol}}, descriptors)
-    catch e
-        @error "Argument descriptors must contain only Function and Symbol types"
-    end
+function apply_descriptors(values::Array{<:Number}, symbols::Array{Symbol})
+    output = Dict{Union{Symbol, Function}, Number}()
+    d = ndims(values)
 
-    # returned dictionary
-    answer = Dict{Union{Symbol, Function}, Real}()
+    [@warn ":$s is not a valid symbol for dimension $d" for s in symbols if s ∉ 𝒟[d]]
+    [push!(output, s => 𝒮[s](values)) for s in symbols if s in 𝒟[d]]  
 
-    # all description functions are applied, results are stored in a new "answer" entry
-    for desc in descriptors
-        if isa(desc, Symbol)
-            push!(answer, desc => desc_dict[desc](values))
-        else
-            push!(answer, desc => desc(values))
-        end
-    end
-
-    return answer
+    return output
 end
 
-function apply_descriptors(descriptors::Vector{Symbol}, values::Array{<:Number})
-    answer = Dict{Symbol, Real}()
-    [push!(answer, desc => desc_dict[desc](values)) for desc in descriptors]
-    return answer
+function apply_descriptors(values::Array{<:Number}, symbols::Array{Symbol}, functions::Array{<:Function})
+    output = apply_descriptors(values, symbols)
+    [push!(output, f => f(values)) for f in functions]    
+    return output
 end
 
-function apply_descriptors(descriptor::Symbol, values::Array{<:Number})
-    return apply_descriptors([descriptor], values)
-end
-
-function apply_descriptors(values::Number)
-    return apply_descriptors(dim_desc[0], [values])
+function apply_descriptors(values::Array{<:Number}, functions::Array{<:Function}, symbols::Array{Symbol})
+    return apply_descriptors(values, symbols, functions)
 end
 
 function apply_descriptors(values::Array{<:Number})
-    dims = ndims(values)
-    return apply_descriptors(dim_desc[dims], values)
+    # default descriptors are chosen based on `values` dimension
+    return apply_descriptors(values, 𝒟[ndims(values)])
 end
 
 end # module
-
-#da scrivere nella pull request:
-#bisogna stare attenti ai tipi in apply descriptors
