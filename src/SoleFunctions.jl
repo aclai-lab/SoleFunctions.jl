@@ -29,8 +29,10 @@ const 𝒟 = Dict{Integer,Vector{Symbol}}(
 
 """ 
     apply_descriptors(values, descriptors, functions)
+
 Evaluate `descriptors` and `functions` with `values`.\n
 Return a dictionary containing the associations descriptor/function -> value
+
 ## PARAMETERS
 * `values` is a `Vector{<:Number}`.
 * `descriptors` is a `Vector{Symbol}`.
@@ -40,14 +42,18 @@ Return a dictionary containing the associations descriptor/function -> value
 julia> descriptions = apply_descriptors([1,2,3,4], [:min, :mean], [maximum])
 Dict{Union{Function, Symbol}, Number}(:mean => 2.5, maximum => 4, :min => 1)\n\n
 ```
+
     apply_descriptors(values, descriptors)
+
 ## EXAMPLE
 ```julia-repl 
 julia> descriptions = apply_descriptors([1,2,3,4], [:min, :mean])
 Dict{Union{Function, Symbol}, Number}(:mean => 2.5, :min => 1)\n\n
 ```
+
     apply_descriptors(values)
 Evaluate default descriptors with values, based on values dimension
+
 # TODO - Show 𝒟 content
 """
 function apply_descriptors(values::Array{<:Number}, symbols::Array{Symbol})
