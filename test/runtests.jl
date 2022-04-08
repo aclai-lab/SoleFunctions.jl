@@ -1,31 +1,69 @@
 using SoleFunctions
 using Statistics
+using random
+using Catch22
 using Test
 
+rng = MersenneTwister(123)
+
 @testset "SoleFunctions.jl" begin
-    test1 = [5,3,7,9,10,921.231,1,32,1323,12.3,12.2,212]
-    
-    min = minimum(test1)
-    max = maximum(test1)
-    media = mean(test1)
-    mediana = median(test1)
-    q_1 = quantile(test1, 0.25)
-    q_3 = quantile(test1, 0.75)
 
-    desc1 = Dict{Symbol, Real}(:mean => media, :min => min, :max => max, :median => mediana, :quantile_1 => q_1, :quantile_3 => q_3)
-    
-    # general test (both Symbols and Functions)
-    @test_throws MethodError apply_descriptors( ["minimum", minimum, :min], [1,2,3])
+    one_dim = rand(10,1)
+    sym_one = [:max,:mean]
+    func_one = [minimum]
 
-    # single Symbol test
+    two_dim = rand(10,2)
+    sym_two = [:max,:quantile_1]
+    func_two = [minimum,mean]
 
-    # single Function test
-    @test 
+    @testset "values symbol & function test" begin
 
-    # default test
-    @test apply_descriptors(test1) == desc1
+        ans_t1d1 = Dict{Union{Symbol,Function},Number}(:max => maximum(one_dim), 
+                                                        :mean => mean(one_dim), 
+                                                        minimum => minimum(one_dim))
 
-    #@test apply_descriptors(test1) == desc1
+        @test apply_descriptors(one_dim,sym_one,func_one) == ans_t1d1
+        @test apply_descriptors(one_dim,func_one,sym_one) == ans_t1d1
 
+
+        ans_t1d2 = Dict{Union{Symbol,Function},Number}(:max => maximum(two_dim), 
+                                                    :quantile_1 => quantile(one_dim,0.25), 
+                                                    minimum => minimum(one_dim),
+                                                    mean => mean(two_dim))
+
+        @test apply_descriptors(two_dim,sym_two,funct_two) == ans_t1d2
+        @test apply_descriptors(two_dim,func_two,sym_two) == ans_t1d2
+
+    @testset "values only test" begin
+        
+        ans_t2d1 = Dict{Union{Symbol,Function},Number}(:max => maximum(one_dim), 
+                                                        :mean => mean(one_dim), 
+                                                        :min => minimum(one_dim),
+                                                        :quantile_1 => quantile(one_dim,0.25),
+                                                        :median => median(one_dim),
+                                                        :quantile_3 => quantile(one_dim,0.75))
+
+        ans_t2d2 = Dict{Union{Symbol,Function},Number}(:max => maximum(two_dim), 
+                                                        :mean => mean(two_dim), 
+                                                        :min => minimum(two_dim),
+                                                        :median => median(two_dim))
+
+        @test apply_descriptors(one_dim) == and_t2d1
+        @test apply_descriptors(two_dim) ==ans_t2d2
+
+    end
+
+    @testset "values and symbols test" begin
+
+        ans_t3d1 = Dict{Union{Symbol,Function},Number}(:max => maximum(two_dim), 
+                                                        :mean => mean(two_dim),)
+
+        ans_t3d2 = Dict{Union{Symbol,Function},Number}(:max => maximum(two_dim), 
+                                                        :quantile_1 => quantile(two_dim,0.25),)
+        
+        @test apply_descriptors(one_dim,sym_one) == ans_t3d1
+        @test apply_descriptors(two_dim,sym_two) == and_t3d2
+
+    end
 
 end
