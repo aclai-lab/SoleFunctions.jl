@@ -22,6 +22,7 @@ rng = MersenneTwister(123)
                                                         :mean => mean(one_dim), 
                                                         minimum => minimum(one_dim))
 
+        @test_throws UndefVarError apply_descriptors(one_dim,sym_one,[uselessFunc])
         @test apply_descriptors(one_dim,sym_one,func_one) == ans_t1d1
         @test apply_descriptors(one_dim,func_one,sym_one) == ans_t1d1
 
@@ -59,8 +60,8 @@ rng = MersenneTwister(123)
                                                         :mean => mean(one_dim))
 
         ans_t3d2 = Dict{Union{Symbol,Function},Number}(:max => maximum(two_dim)) 
-                                                        
-        
+                                                       
+        @test_logs (:warn,":noSymbol is not a valid symbol for dimension 1") apply_descriptors(one_dim,[:noSymbol]) 
         @test apply_descriptors(one_dim,sym_one) == ans_t3d1
         @test apply_descriptors(two_dim,sym_two) == ans_t3d2
 
