@@ -21,10 +21,10 @@ const 𝒮 = Dict{Symbol,Function}(
 
 # default functions by dimension
 const 𝒟 = Dict{Integer,Vector{Symbol}}(
-    # TODO add default functions for other dimensions
+    # TODO add default functions for other dimensions 
     0 => [:mean, :min, :max],
     1 => [:mean, :min, :max, :quantile_1, :median, :quantile_3],
-    2 => [:mean, :min, :max, :median]
+    2 => [:mean, :min, :max, :median] 
 )
 
 """ 
