@@ -1,22 +1,23 @@
 using SoleFunctions
-using Statistics
 using Random
-using Catch22
 using Test
 
 rng = MersenneTwister(123)
 
 @testset "SoleFunctions.jl" begin
 
-    one_dim = rand(Float64,10)
+    using Statistics
+    using Catch22
+
+    one_dim = rand(Float64,100)
     sym_one = [:max,:mean]
     func_one = [minimum]
 
-    two_dim = rand(Float64,10,2)
+    two_dim = rand(Float64,100,2)
     sym_two = [:max]
     func_two = [minimum,mean]
 
-    @testset "values symbol & function test" begin
+    @testset "values, symbols, functions test" begin
 
         ans_t1d1 = Dict{Union{Symbol,Function},Number}(
             :max => maximum(one_dim),
@@ -24,7 +25,7 @@ rng = MersenneTwister(123)
             minimum => minimum(one_dim)
         )
 
-        @test_throws UndefVarError apply_descriptors(one_dim,sym_one,[uselessFunc])
+        @test_throws UndefVarError apply_descriptors(one_dim,sym_one,[nonexistent_function])
         @test apply_descriptors(one_dim,sym_one,func_one) == ans_t1d1
         @test apply_descriptors(one_dim,func_one,sym_one) == ans_t1d1
 
@@ -47,7 +48,8 @@ rng = MersenneTwister(123)
             :min => minimum(one_dim),
             :quantile_1 => quantile(one_dim,0.25),
             :median => median(one_dim),
-            :quantile_3 => quantile(one_dim,0.75)
+            :quantile_3 => quantile(one_dim,0.75),
+            (getnames(catch22) .=> catch22(one_dim))...
         )
 
         ans_t2d2 = Dict{Union{Symbol,Function},Number}(
@@ -62,7 +64,7 @@ rng = MersenneTwister(123)
 
     end
 
-    @testset "values and symbols test" begin
+    @testset "values, symbols test" begin
 
         ans_t3d1 = Dict{Union{Symbol,Function},Number}(
             :max => maximum(one_dim),

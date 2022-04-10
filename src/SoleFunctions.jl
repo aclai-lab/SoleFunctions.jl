@@ -22,14 +22,10 @@ const 𝒮 = Dict{Symbol,Function}(
 # default functions by dimension
 const 𝒟 = Dict{Integer,Vector{Symbol}}(
     # TODO manage 0, 2 and higher dimensions.
-    0 => [:mean, :min, :max],
-    1 => [:mean, :min, :max, :quantile_1, :median, :quantile_3],
-    2 => [:mean, :min, :max, :median]
+    0 => [:max, :mean, :min],
+    1 => [:max, :mean, :min, :median, :quantile_1, :quantile_3, getnames(catch22)...],
+    2 => [:max, :mean, :median, :min]
 )
-
-@show 𝒟[1]
-
-print( DN_HistogramMode_10([1 2 3 4; 5 6 7 8] ))
 
 """
     apply_descriptors(values, descriptors, functions)
