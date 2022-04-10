@@ -15,14 +15,12 @@ const 𝒮 = Dict{Symbol,Function}(
     :median => median,
     :quantile_1 => (q_1 = x -> quantile(x, 0.25)),
     :quantile_3 =>(q_3 = x -> quantile(x, 0.75)),
-    # allow catch22 desc
+    # catch22 descriptors
     (getnames(catch22) .=> catch22)...
 )
 
 # default functions by dimension
 const 𝒟 = Dict{Integer,Vector{Symbol}}(
-    # TODO manage 0, 2 and higher dimensions.
-    0 => [:max, :mean, :min],
     1 => [:max, :mean, :min, :median, :quantile_1, :quantile_3, getnames(catch22)...],
     2 => [:max, :mean, :median, :min]
 )
@@ -52,9 +50,7 @@ Dict{Union{Function, Symbol}, Number}(:mean => 2.5, :min => 1)\n\n
 ```
 
     apply_descriptors(values)
-Evaluate default descriptors with values, based on values dimension
-
-# TODO - Show 𝒟 content
+Evaluate default descriptors with values, based on values dimension.
 """
 function apply_descriptors(values::Array{<:Number}, symbols::Array{Symbol})
     output = Dict{Union{Symbol, Function}, Number}()
