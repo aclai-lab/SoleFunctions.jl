@@ -21,13 +21,17 @@ const 𝒮 = Dict{Symbol,Function}(
 
 # default functions by dimension
 const 𝒟 = Dict{Integer,Vector{Symbol}}(
-    # TODO add default functions for other dimensions 
+    # TODO manage 0, 2 and higher dimensions.
     0 => [:mean, :min, :max],
     1 => [:mean, :min, :max, :quantile_1, :median, :quantile_3],
-    2 => [:mean, :min, :max, :median] 
+    2 => [:mean, :min, :max, :median]
 )
 
-""" 
+@show 𝒟[1]
+
+print( DN_HistogramMode_10([1 2 3 4; 5 6 7 8] ))
+
+"""
     apply_descriptors(values, descriptors, functions)
 
 Evaluate `descriptors` and `functions` with `values`.\n
@@ -38,7 +42,7 @@ Return a dictionary containing the associations descriptor/function -> value
 * `descriptors` is a `Vector{Symbol}`.
 * `functions` is a `Vector{Function}`.
 ## EXAMPLE
-```julia-repl 
+```julia-repl
 julia> descriptions = apply_descriptors([1,2,3,4], [:min, :mean], [maximum])
 Dict{Union{Function, Symbol}, Number}(:mean => 2.5, maximum => 4, :min => 1)\n\n
 ```
@@ -46,7 +50,7 @@ Dict{Union{Function, Symbol}, Number}(:mean => 2.5, maximum => 4, :min => 1)\n\n
     apply_descriptors(values, descriptors)
 
 ## EXAMPLE
-```julia-repl 
+```julia-repl
 julia> descriptions = apply_descriptors([1,2,3,4], [:min, :mean])
 Dict{Union{Function, Symbol}, Number}(:mean => 2.5, :min => 1)\n\n
 ```
@@ -61,18 +65,26 @@ function apply_descriptors(values::Array{<:Number}, symbols::Array{Symbol})
     d = ndims(values)
 
     [@warn ":$s is not a valid symbol for dimension $d" for s in symbols if s ∉ 𝒟[d]]
-    [push!(output, s => 𝒮[s](values)) for s in symbols if s in 𝒟[d]]  
+    [push!(output, s => 𝒮[s](values)) for s in symbols if s in 𝒟[d]]
 
     return output
 end
 
-function apply_descriptors(values::Array{<:Number}, symbols::Array{Symbol}, functions::Array{<:Function})
+function apply_descriptors(
+    values::Array{<:Number},
+    symbols::Array{Symbol},
+    functions::Array{<:Function}
+)
     output = apply_descriptors(values, symbols)
-    [push!(output, f => f(values)) for f in functions]    
+    [push!(output, f => f(values)) for f in functions]
     return output
 end
 
-function apply_descriptors(values::Array{<:Number}, functions::Array{<:Function}, symbols::Array{Symbol})
+function apply_descriptors(
+    values::Array{<:Number},
+    functions::Array{<:Function},
+    symbols::Array{Symbol}
+)
     return apply_descriptors(values, symbols, functions)
 end
 
