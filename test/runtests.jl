@@ -115,6 +115,12 @@ rng = MersenneTwister(123)
         @test apply_descriptors(two_dim, [:max], [minimum, mean]) == ans_t1d2
         @test apply_descriptors(two_dim, [minimum, mean], [:max]) == ans_t1d2
 
+        @test apply_descriptors(one_dim, [:max :max :max :max], [mean mean mean mean]) ==
+        Dict{Union{Symbol,Function},Number}(
+            :max => maximum(one_dim),
+            mean => mean(one_dim)
+        )
+
         # one symbol, multiple functions
         @test apply_descriptors(one_dim, :CO_HistogramAMI_even_2_5, [mean, median]) ==
         Dict{Union{Symbol,Function},Number}(
@@ -131,8 +137,9 @@ rng = MersenneTwister(123)
             mean => mean(one_dim)
         )
 
-        @test apply_descriptors(one_dim, [:max :max :max :max], [mean mean mean mean]) ==
+        @test apply_descriptors(one_dim, [:min :min :min :max], mean) ==
         Dict{Union{Symbol,Function},Number}(
+            :min => minimum(one_dim),
             :max => maximum(one_dim),
             mean => mean(one_dim)
         )
