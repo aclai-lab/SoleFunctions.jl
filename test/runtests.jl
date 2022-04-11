@@ -133,6 +133,4 @@ rng = MersenneTwister(123)
 
     end
 
-    @test "apotropaic" == "apotropaic"
-
 end
