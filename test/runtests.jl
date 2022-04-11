@@ -12,7 +12,7 @@ rng = MersenneTwister(123)
     # input in one-dimensional case
     one_dim = rand(Float64,100)
     # symbol and function arrays used in the test
-    sym_one = [:max,:mean]
+    sym_one = [:max,:mean,:quantile_1]
     func_one = [minimum]
 
     two_dim = rand(Float64,100,2)
@@ -44,17 +44,67 @@ rng = MersenneTwister(123)
 
     end
 
-    @testset "values, symbols, functions test" begin
+    @testset "values, single symbol and/or single function" begin
+
+        @test apply_descriptors(one_dim, maximum) == Dict{Union{Symbol,Function},Number}(
+            maximum => maximum(one_dim)
+        )
+
+        @test apply_descriptors(one_dim, :max) == Dict{Union{Symbol,Function},Number}(
+            :max => maximum(one_dim)
+        )
+
+        @test apply_descriptors(one_dim, :quantile_1) ==
+        Dict{Union{Symbol,Function},Number}(
+            :quantile_1 => quantile(one_dim, 0.25)
+        )
+
+        @test apply_descriptors(one_dim, :CO_HistogramAMI_even_2_5) ==
+        Dict{Union{Symbol,Function},Number}(
+            :CO_HistogramAMI_even_2_5 => CO_HistogramAMI_even_2_5(one_dim)
+        )
+
+        @test apply_descriptors(one_dim, :CO_HistogramAMI_even_2_5, mean) ==
+        Dict{Union{Symbol,Function},Number}(
+            :CO_HistogramAMI_even_2_5 => CO_HistogramAMI_even_2_5(one_dim),
+            mean => mean(one_dim)
+        )
+
+    end
+
+    @testset "values, symbols test" begin
+
+        @test_logs (:warn,":noSymbol is not a valid symbol for dimension 1")
+            apply_descriptors(one_dim,[:no_symbol])
+
+        @test apply_descriptors(one_dim, [:max,:mean,:quantile_1]) ==
+        Dict{Union{Symbol,Function},Number}(
+            :max => maximum(one_dim),
+            :mean => mean(one_dim),
+            :quantile_1 => quantile(one_dim, 0.25)
+        )
+
+        @test apply_descriptors(two_dim, [:max]) == Dict{Union{Symbol,Function},Number}(
+            :max => maximum(two_dim)
+        )
+
+    end
+
+    @testset "values, symbol/s, function/s test" begin
 
         ans_t1d1 = Dict{Union{Symbol,Function},Number}(
             :max => maximum(one_dim),
             :mean => mean(one_dim),
+            :quantile_1 => quantile(one_dim, 0.25),
             minimum => minimum(one_dim)
         )
 
-        @test_throws UndefVarError apply_descriptors(one_dim,sym_one,[nonexistent_function])
-        @test apply_descriptors(one_dim,sym_one,func_one) == ans_t1d1
-        @test apply_descriptors(one_dim,func_one,sym_one) == ans_t1d1
+        @test_throws UndefVarError apply_descriptors(
+            one_dim,[:max, :mean],[nonexistent_function]
+        )
+
+        @test apply_descriptors(one_dim,[:max, :mean, :quantile_1], [minimum]) == ans_t1d1
+        @test apply_descriptors(one_dim,[minimum],[:max, :mean, :quantile_1]) == ans_t1d1
 
         ans_t1d2 = Dict{Union{Symbol,Function},Number}(
             :max => maximum(two_dim),
@@ -62,28 +112,27 @@ rng = MersenneTwister(123)
             mean => mean(two_dim)
         )
 
-        @test apply_descriptors(two_dim,sym_two,func_two) == ans_t1d2
-        @test apply_descriptors(two_dim,func_two,sym_two) == ans_t1d2
+        @test apply_descriptors(two_dim, [:max], [minimum, mean]) == ans_t1d2
+        @test apply_descriptors(two_dim, [minimum, mean], [:max]) == ans_t1d2
 
-    end
+        # one symbol, multiple functions
+        @test apply_descriptors(one_dim, :CO_HistogramAMI_even_2_5, [mean, median]) ==
+        Dict{Union{Symbol,Function},Number}(
+            :CO_HistogramAMI_even_2_5 => CO_HistogramAMI_even_2_5(one_dim),
+            mean => mean(one_dim),
+            median => median(one_dim)
+        )
 
-    @testset "values, symbols test" begin
-
-        ans_t3d1 = Dict{Union{Symbol,Function},Number}(
+        # multiple symbols, one function
+        @test apply_descriptors(one_dim, [:max :CO_HistogramAMI_even_2_5], mean) ==
+        Dict{Union{Symbol,Function},Number}(
             :max => maximum(one_dim),
-            :mean => mean(one_dim)
+            :CO_HistogramAMI_even_2_5 => CO_HistogramAMI_even_2_5(one_dim),
+            mean => mean(one_dim)
         )
-
-        ans_t3d2 = Dict{Union{Symbol,Function},Number}(
-            :max => maximum(two_dim)
-        )
-
-        @test_logs (:warn,":noSymbol is not a valid symbol for dimension 1")
-            apply_descriptors(one_dim,[:noSymbol])
-
-        @test apply_descriptors(one_dim,sym_one) == ans_t3d1
-        @test apply_descriptors(two_dim,sym_two) == ans_t3d2
 
     end
+
+    @test "apotropaic" == "apotropaic"
 
 end
