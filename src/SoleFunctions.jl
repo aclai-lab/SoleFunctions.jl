@@ -1,5 +1,8 @@
 module SoleFunctions
 
+# TODO: add tests for the newly defined (dispatched) functions
+# Eduard 11 Apr 2022
+
 using Statistics
 using Catch22
 
@@ -40,7 +43,7 @@ Return a dictionary containing the associations descriptor/function -> value
 julia> descriptions = apply_descriptors([1,2,3,4], [:min, :mean], [maximum])
 Dict{Union{Function, Symbol}, Number}(:mean => 2.5, maximum => 4, :min => 1)\n\n
 ```
-
+---
     apply_descriptors(values, descriptors)
 
 ## EXAMPLE
@@ -62,6 +65,29 @@ function apply_descriptors(values::Array{<:Number}, symbols::Array{Symbol})
     return output
 end
 
+# TODO: add documentation
+# Eduard 11 Apr 2022
+function apply_descriptors(values::Array{<:Number}, symbol::Symbol)
+    return apply_descriptors(values, [symbol])
+end
+
+# TODO: add documentation
+# Eduard 11 Apr 2022
+function apply_descriptors(values::Array{<:Number}, functions::Array{<:Function})
+    output = Dict{Union{Symbol, Function}, Number}()
+
+    [push!(output, f => f(values)) for f in functions]
+    return output
+end
+
+# TODO: add documentation
+# Eduard 11 Apr 2022
+function apply_descriptors(values::Array{<:Number}, f::Function)
+    return apply_descriptors(values, [f])
+end
+
+# TODO: add documentation
+# Eduard 11 Apr 2022
 function apply_descriptors(
     values::Array{<:Number},
     symbols::Array{Symbol},
@@ -72,6 +98,8 @@ function apply_descriptors(
     return output
 end
 
+# TODO: add documentation
+# Eduard 11 Apr 2022
 function apply_descriptors(
     values::Array{<:Number},
     functions::Array{<:Function},
@@ -80,6 +108,8 @@ function apply_descriptors(
     return apply_descriptors(values, symbols, functions)
 end
 
+# TODO: add documentation
+# Eduard 11 Apr 2022
 function apply_descriptors(values::Array{<:Number})
     # default descriptors are chosen based on `values` dimension
     return apply_descriptors(values, 𝒟[ndims(values)])
