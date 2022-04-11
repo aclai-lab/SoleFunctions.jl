@@ -131,8 +131,12 @@ rng = MersenneTwister(123)
             mean => mean(one_dim)
         )
 
-    end
+        @test apply_descriptors(one_dim, [:max :max :max :max], [mean mean mean mean]) ==
+        Dict{Union{Symbol,Function},Number}(
+            :max => maximum(one_dim),
+            mean => mean(one_dim)
+        )
 
-    @test "apotropaic" == "apotropaic"
+    end
 
 end

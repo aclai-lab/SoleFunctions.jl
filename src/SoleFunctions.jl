@@ -65,8 +65,6 @@ function apply_descriptors(values::Array{<:Number}, symbols::Array{Symbol})
     return output
 end
 
-# TODO: add documentation
-# Eduard 11 Apr 2022
 """
     apply_descriptors(values,symbol)
 
@@ -84,8 +82,6 @@ function apply_descriptors(values::Array{<:Number}, symbol::Symbol)
     return apply_descriptors(values, [symbol])
 end
 
-# TODO: add documentation
-# Eduard 11 Apr 2022
 """
     apply_descriptors(values,functions)
 
@@ -106,8 +102,6 @@ function apply_descriptors(values::Array{<:Number}, functions::Array{<:Function}
     return output
 end
 
-# TODO: add documentation
-# Eduard 11 Apr 2022
 """
     apply_descriptors(values,function)
 
@@ -125,8 +119,6 @@ function apply_descriptors(values::Array{<:Number}, f::Function)
     return apply_descriptors(values, [f])
 end
 
-# TODO: add documentation
-# Eduard 11 Apr 2022
 """
     apply_descriptors(values, symbols, functions)
 Evaluate `symbols` and `functions` on `values`.\n
@@ -151,8 +143,6 @@ function apply_descriptors(
     return output
 end
 
-# TODO: add documentation
-# Eduard 11 Apr 2022
 """
     apply_descriptors(values, functions, symbols)
 Evaluate `symbols` and `functions` on `values`.\n
@@ -175,8 +165,6 @@ function apply_descriptors(
     return apply_descriptors(values, symbols, functions)
 end
 
-# TODO: add documentation
-# Eduard 11 Apr 2022
 """
     apply_descriptors(values)
 
@@ -200,6 +188,28 @@ Dict{Union{Function, Symbol}, Number}(:max => 4, :mean => 2.5, :min => 1, :media
 function apply_descriptors(values::Array{<:Number})
     # default descriptors are chosen based on `values` dimension
     return apply_descriptors(values, 𝒟[ndims(values)])
+end
+
+"""
+    apply_descriptors(values, symbols, function)
+Evaluate `symbol` and `function` on `values`.\n
+Return a dictionary containing the associations symbol/function -> value
+## PARAMETERS
+    * `values` is a `Vector{<:Number}`.
+    * `symbols` is a `Symbols`.
+    * `functions` is a `Function`.
+## EXAMPLE
+```julia-repl
+julia> descriptions = apply_descriptors([1,2,3,4],[:min,:mean],[maximum])
+Dict{Union{Function, Symbol}, Number}(maximum => 4,:mean => 2.5, :min => 1)
+```
+"""
+function apply_descriptors(
+    values::Array{<:Number},
+    symbols::Array{Symbol},
+    fun::Function
+)
+    return apply_descriptors(values, symbols, [fun])
 end
 
 """
@@ -243,28 +253,6 @@ function apply_descriptors(
     fun::Function
 )
     return apply_descriptors(values, [symbol], [fun])
-end
-
-"""
-    apply_descriptors(values, symbol, function)
-Evaluate `symbol` and `function` on `values`.\n
-Return a dictionary containing the associations symbol/function -> value
-## PARAMETERS
-    * `values` is a `Vector{<:Number}`.
-    * `symbols` is a `Symbols`.
-    * `functions` is a `Function`.
-## EXAMPLE
-```julia-repl
-julia> descriptions = apply_descriptors([1,2,3,4],[:min,:mean],[maximum])
-Dict{Union{Function, Symbol}, Number}(maximum => 4,:mean => 2.5, :min => 1)
-```
-"""
-function apply_descriptors(
-    values::Array{<:Number},
-    symbol::Array{Symbol},
-    fun::Function
-)
-    return apply_descriptors(values, symbol, [fun])
 end
 
 end # module
