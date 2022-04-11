@@ -137,6 +137,13 @@ rng = MersenneTwister(123)
             mean => mean(one_dim)
         )
 
+        @test apply_descriptors(one_dim, [:max :max :min :min], mean) ==
+        Dict{Union{Symbol,Function},Number}(
+            :min => minimum(one_dim),
+            :max => maximum(one_dim),
+            mean => mean(one_dim)
+        )
+
     end
 
 end
