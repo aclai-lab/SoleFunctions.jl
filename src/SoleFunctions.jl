@@ -12,49 +12,55 @@ export apply_descriptors
 
 # function dictionary
 const 𝒮 = Dict{Symbol,Function}(
-    :mean => mean,
-    :min => minimum,
-    :max => maximum,
-    :median => median,
-    :quantile_1 => (q_1 = x -> quantile(x, 0.25)),
-    :quantile_3 =>(q_3 = x -> quantile(x, 0.75)),
+    :mean       => mean,
+    :minimum    => minimum,
+    :maximum    => maximum,
+    :median     => median,
+    :quantile_1 => (x -> quantile(x, 0.25)),
+    :quantile_3 => (x -> quantile(x, 0.75)),
     # catch22 descriptors
     (getnames(catch22) .=> catch22)...
 )
 
 # default functions by dimension
 const 𝒟 = Dict{Integer,Vector{Symbol}}(
-    1 => [:max, :mean, :min, :median, :quantile_1, :quantile_3, getnames(catch22)...],
-    2 => [:max, :mean, :median, :min]
+    1 => [:maximum, :mean, :minimum, :median, :quantile_1, :quantile_3, getnames(catch22)...],
+    2 => [:maximum, :mean, :median, :minimum]
 )
 
 """
     apply_descriptors(values, symbols)
 
 Return a dictionary obtained by the evaluation of `symbols` corresponding functions
-on `values`
+on `values`.
 
-the possible `symbols` are choosen from a dictionary defined as follows
+Tthe possible `symbols` are choosen from a dictionary defined as follows:
 
     :mean           =>  mean
-    :min            =>  minimum
-    :max            =>  maximum
+    :minimum        =>  minimum
+    :maximum        =>  maximum
     :median         =>  median
     :quantile_1     =>  quantile(x, 0.25)
     :quantile_3     =>  quantile(x, 0.75)
     ...
 
-catch22 functions are also implemented,
-see the documentation here: "https://github.com/chlubba/catch22/wiki/Feature-Descriptions"
+Catch22 functions are also implemented, see the documentation here:
+"https://github.com/chlubba/catch22/wiki/Feature-Descriptions"
+
 ## PARAMETERS
-    * `values` is a `Vector{<:Number}`.
-    * `symbols` is a `Vector{Symbol}`.
+- `values` is a `Vector{<:Number}`.
+- `symbols` is a `Vector{Symbol}`.
+
 ## EXAMPLE
 ```julia-repl
-julia> descriptions = apply_descriptors([1,2,3,4], [:min, :mean])
-Dict{Union{Function, Symbol}, Number}(:mean => 2.5, :min => 1)\n
+julia> descriptions = apply_descriptors([1,2,3,4], [:minimum, :mean])
+Dict{Union{Function, Symbol}, Number}(:mean => 2.5, :minimum => 1)\n
 ```
 """
+# TODO: A single documentation for all these functions
+# Eduard 12 Apr 2022
+function apply_descriptors end
+
 function apply_descriptors(values::Array{<:Number}, symbols::Array{Symbol})
     output = Dict{Union{Symbol, Function}, Number}()
     d = ndims(values)
@@ -69,13 +75,15 @@ end
     apply_descriptors(values,symbol)
 
 evaluates `symbol` corresponding function on `values`
+
 ## PARAMETERS
-* `values` is a `Vector{<:Number}`.
-* `symbols` is a `Symbol`.
+- `values` is a `Vector{<:Number}`.
+- `symbols` is a `Symbol`.
+
 ## EXAMPLE
 ```julia-repl
-julia> descriptions = apply_descriptors([1,2,3,4], [:min])
-Dict{Union{Function, Symbol}, Number}(:min => 1)
+julia> descriptions = apply_descriptors([1,2,3,4], [:minimum])
+Dict{Union{Function, Symbol}, Number}(:minimum => 1)
 ```
 """
 function apply_descriptors(values::Array{<:Number}, symbol::Symbol)
@@ -86,9 +94,11 @@ end
     apply_descriptors(values,functions)
 
 evaluates `functions` on `values`
+
 ## PARAMETERS
-* `values` is a `Vector{<:Number}`.
-* `functions` is a `Array{<:Function}`.
+- `values` is a `Vector{<:Number}`.
+- `functions` is a `Array{<:Function}`.
+
 ## EXAMPLE
 ```julia-repl
 julia> descriptions = apply_descriptors([1,2,3,4], [minimum,maximum])
@@ -106,9 +116,11 @@ end
     apply_descriptors(values,function)
 
 evaluates `function` on `values`
+
 ## PARAMETERS
-* `values` is a `Vector{<:Number}`.
-* `functions` is a `Function`.
+- `values` is a `Vector{<:Number}`.
+- `functions` is a `Function`.
+
 ## EXAMPLE
 ```julia-repl
 julia> descriptions = apply_descriptors([1,2,3,4], [maximum])
@@ -121,16 +133,19 @@ end
 
 """
     apply_descriptors(values, symbols, functions)
+
 Evaluate `symbols` and `functions` on `values`.\n
 Return a dictionary containing the associations symbols/function -> value
+
 ## PARAMETERS
-    * `values` is a `Vector{<:Number}`.
-    * `symbols` is a `Vector{Symbol}`.
-    * `functions` is a `Vector{Function}`.
+- `values` is a `Vector{<:Number}`
+- `symbols` is a `Vector{Symbol}`.
+- `functions` is a `Vector{Function}`.
+
 ## EXAMPLE
 ```julia-repl
-julia> descriptions = apply_descriptors([1,2,3,4],[maximum],[:min, :mean])
-Dict{Union{Function, Symbol}, Number}(maximum => 4,:mean => 2.5, :min => 1)
+julia> descriptions = apply_descriptors([1,2,3,4],[maximum],[:minimum, :mean])
+Dict{Union{Function, Symbol}, Number}(maximum => 4,:mean => 2.5, :minimum => 1)
 ```
 """
 function apply_descriptors(
@@ -147,14 +162,16 @@ end
     apply_descriptors(values, functions, symbols)
 Evaluate `symbols` and `functions` on `values`.\n
 Return a dictionary containing the associations symbols/function -> value
+
 ## PARAMETERS
-    * `values` is a `Vector{<:Number}`.
-    * `symbols` is a `Vector{Symbol}`.
-    * `functions` is a `Vector{Function}`.
+- `values` is a `Vector{<:Number}`.
+- `symbols` is a `Vector{Symbol}`.
+- `functions` is a `Vector{Function}`.
+
 ## EXAMPLE
 ```julia-repl
-julia> descriptions = apply_descriptors([1,2,3,4], [:min, :mean], [maximum])
-Dict{Union{Function, Symbol}, Number}(maximum => 4, :mean => 2.5, :min => 1)
+julia> descriptions = apply_descriptors([1,2,3,4], [:minimum, :mean], [maximum])
+Dict{Union{Function, Symbol}, Number}(maximum => 4, :mean => 2.5, :minimum => 1)
 ```
 """
 function apply_descriptors(
@@ -173,16 +190,17 @@ Return a dictionary containing the evaluation of default functions on `values`
 default functions are choosen according to the dimensions of the data as
 follows:
 
-    1 => [:max, :mean, :min, :median, :quantile_1, :quantile_3, getnames(catch22)...]
-    2 => [:max, :mean, :median, :min]
+    1 => [:maximum, :mean, :minimum, :median, :quantile_1, :quantile_3, getnames(catch22)...]
+    2 => [:maximum, :mean, :median, :minimum]
     ...
 ## PARAMETERS
-    * `values` is a `Vector{<:Number}`.
+- `values` is a `Vector{<:Number}`.
+
 ## EXAMPLE
 ```julia-repl
 julia> descriptions = apply_descriptors([1,2,3,4])
-Dict{Union{Function, Symbol}, Number}(:max => 4, :mean => 2.5, :min => 1, :median => 2.5,
-:quantile_1 => 1.75, :quantile_3 => 3.25, ...)\n
+Dict{Union{Function, Symbol}, Number}(:maximum => 4, :mean => 2.5, :minimum => 1,
+:median => 2.5, :quantile_1 => 1.75, :quantile_3 => 3.25, ...)\n
 ```
 """
 function apply_descriptors(values::Array{<:Number})
@@ -192,16 +210,19 @@ end
 
 """
     apply_descriptors(values, symbols, function)
+
 Evaluate `symbol` and `function` on `values`.\n
 Return a dictionary containing the associations symbol/function -> value
+
 ## PARAMETERS
     * `values` is a `Vector{<:Number}`.
     * `symbols` is a `Symbols`.
-    * `functions` is a `Function`.
+    * `functions` is a `Function`. #TODO
+
 ## EXAMPLE
 ```julia-repl
-julia> descriptions = apply_descriptors([1,2,3,4],[:min,:mean],[maximum])
-Dict{Union{Function, Symbol}, Number}(maximum => 4,:mean => 2.5, :min => 1)
+julia> descriptions = apply_descriptors([1,2,3,4],[:minimum,:mean],[maximum])
+Dict{Union{Function, Symbol}, Number}(maximum => 4,:mean => 2.5, :minimum => 1)
 ```
 """
 function apply_descriptors(
@@ -214,16 +235,19 @@ end
 
 """
     apply_descriptors(values, symbol, functions)
+
 Evaluate `symbol` and `functions` on `values`.\n
 Return a dictionary containing the associations symbol/function -> value
+
 ## PARAMETERS
-    * `values` is a `Vector{<:Number}`.
-    * `symbols` is a `Symbol`.
-    * `functions` is a `Vector{<:Function}`.
+- `values` is a `Vector{<:Number}`.
+- `symbols` is a `Symbol`.
+- `functions` is a `Vector{<:Function}`.
+
 ## EXAMPLE
 ```julia-repl
-julia> descriptions = apply_descriptors([1,2,3,4],[maximum],[:min])
-Dict{Union{Function, Symbol}, Number}(maximum => 4, :min => 1)
+julia> descriptions = apply_descriptors([1,2,3,4],[maximum],[:minimum])
+Dict{Union{Function, Symbol}, Number}(maximum => 4, :minimum => 1)
 ```
 """
 function apply_descriptors(
@@ -233,18 +257,22 @@ function apply_descriptors(
 )
     return apply_descriptors(values, [symbol], functions)
 end
+
 """
     apply_descriptors(values, symbol, function)
+
 Evaluate `symbol` and `function` on `values`.\n
 Return a dictionary containing the associations symbol/function -> value
+
 ## PARAMETERS
-    * `values` is a `Vector{<:Number}`.
-    * `symbols` is a `Symbol`.
-    * `functions` is a `Function`.
+- `values` is a `Vector{<:Number}`.
+- `symbols` is a `Symbol`.
+- `functions` is a `Function`.
+
 ## EXAMPLE
 ```julia-repl
-julia> descriptions = apply_descriptors([1,2,3,4],[:min],[maximum])
-Dict{Union{Function, Symbol}, Number}(maximum => 4, :min => 1)
+julia> descriptions = apply_descriptors([1,2,3,4],[:minimum],[maximum])
+Dict{Union{Function, Symbol}, Number}(maximum => 4, :minimum => 1)
 ```
 """
 function apply_descriptors(
